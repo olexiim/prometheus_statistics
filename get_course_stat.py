@@ -6,6 +6,7 @@ Created on Tue Jul 14 23:30:16 2015
 """
 
 import MySQLdb
+import time
 from optparse import OptionParser
 
 db_url = "localhost"
@@ -51,6 +52,42 @@ def get_course_data(course_title):
     data = cursor.fetchone()
     percent = 100*float(data[0]) / result["Number of registered users"][0]
     result["Number of certificates"] = (data[0], "{0:,d} ({1:.2f}%)".format(data[0],percent))
+    
+    # Age groups and education level
+    cursor = db.cursor()
+    sql = "SELECT b.year_of_birth AS YEAR, b.gender AS gender, b.level_of_education AS level " \
+            "FROM student_courseenrollment a " \
+            "LEFT JOIN auth_userprofile b ON a.user_id = b.user_id " \
+            "WHERE a.course_id = '%s'" % (course_title)
+    cursor.execute(sql)
+    data = cursor.fetchall()
+    
+    ages = {'NA':0, '<20':0, '20-24':0, '25-29':0, '30-34':0, '35-39':0, '40-44': 0, '45-49':0, '>=50':0}
+    ages_list = ('NA', '<20', '20-24', '25-29', '30-34', '35-39', '40-44', '45-49', '>=50')
+    Year = time.localtime().tm_year
+    for line in data:
+        if line[0]=='NULL':
+            ages['NA'] += 1
+        else:
+            age = Year - int(line[0])
+            if age<20:
+                ages['<20'] += 1
+            elif age<25:
+                ages['20-24'] += 1
+            elif age<30:
+                ages['25-29'] += 1
+            elif age<35:
+                ages['30-34'] += 1
+            elif age<40:
+                ages['35-39'] += 1
+            elif age<45:
+                ages['40-44'] += 1
+            elif age<50:
+                ages['45-49'] += 1
+            else:
+                ages['>=50'] += 1
+                
+    result["User age groups"] = (ages, '\n'.join(["{0}:\t{1:,d}".format(age,ages[age]) for age in ages_list]))
     
     return result
     
