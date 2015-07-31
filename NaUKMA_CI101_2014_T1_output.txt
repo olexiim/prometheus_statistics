@@ -1,0 +1,8 @@
+Course: NaUKMA/CI101/2014_T1
+
+1. Number of registered users
+14,647
+
+2. Number of certificates
+1,438 (9.82%)
+
