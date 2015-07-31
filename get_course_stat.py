@@ -12,7 +12,7 @@ db_url = "localhost"
 db_user = ""
 db_pass = ""
 db_name = ""
-output_file = 'statistics.csv'
+output_file = ''
 db = None
 
 headers = ["Number of registered users",
@@ -46,7 +46,7 @@ def get_course_data(course_title):
     return result
     
 def write_course_data_detailed(data, output_file):
-    with f as open(output_file,'w'):
+    with open(output_file,'w') as f:
         i = 1
         for key,value in data.iteritems:
             f.write("{idx}. {title}\n{value}\n\n".format(idx=i, title=key, value=value))
@@ -67,7 +67,7 @@ if __name__=="__main__":
                       metavar="OUTPUT", default=output_file)
     parser.add_option("-a", "--output-append", dest="output_append", help="whether append data to existed file", 
                       metavar="OUTPUT_APPEND", action="store_true")
-    parser.add_option("-o", "--output-format", dest="output_format", help="csv|detailed (default)", 
+    parser.add_option("-f", "--output-format", dest="output_format", help="csv|detailed (default)", 
                       metavar="OUTPUT_FORMAT", default='detailed')                  
     
     (options, args) = parser.parse_args()
@@ -86,5 +86,8 @@ if __name__=="__main__":
         
     for course_title in courses:
         course_data = get_course_data(course_title)
+        
+        if output_file=='':
+            output_file = "{0}_output.txt".format(course_title.replace('/','_'))
         if options.output_format=='detailed':
-            write_course_data_detailed(course_data, options.output_file)
+            write_course_data_detailed(course_data, output_file)
