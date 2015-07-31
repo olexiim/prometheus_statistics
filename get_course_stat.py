@@ -66,7 +66,7 @@ def get_course_data(course_title):
     ages_list = ('NA', '<20', '20-24', '25-29', '30-34', '35-39', '40-44', '45-49', '>=50')
     Year = time.localtime().tm_year
     for line in data:
-        if line[0]=='NULL':
+        if line[0]==None:
             ages['NA'] += 1
         else:
             age = Year - int(line[0])
