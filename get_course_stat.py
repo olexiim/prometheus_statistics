@@ -29,7 +29,9 @@ headers = ["Number of registered users",
            "Percentage of forum active users",
            "Number of forum message per one user",
            "Number of forum message per one active user",
-           "Bachelor and higher educated users (percents)"]
+           "Bachelor and higher educated users (percents)",
+           "Bachelor and higher with certificates (percents)",
+]
 
 #def write_output_header(output_file):
     
@@ -63,49 +65,68 @@ def get_course_data(course_title):
     cursor.execute(sql)
     data = cursor.fetchall()
     
-    ages = {'NA':0, '<20':0, '20-24':0, '25-29':0, '30-34':0, '35-39':0, '40-44': 0, '45-49':0, '>=50':0}
     ages_list = ('NA', '<20', '20-24', '25-29', '30-34', '35-39', '40-44', '45-49', '>=50')
-    Year = time.localtime().tm_year
-    s, cntr = 0, 0
-    m, f = 0, 0
-    edlevel = 0
-
-    for line in data:
-        if line[0]==None:
-            ages['NA'] += 1
-        else:
-            age = Year - int(line[0])
-            s += age
-            cntr += 1
-            if age<20:
-                ages['<20'] += 1
-            elif age<25:
-                ages['20-24'] += 1
-            elif age<30:
-                ages['25-29'] += 1
-            elif age<35:
-                ages['30-34'] += 1
-            elif age<40:
-                ages['35-39'] += 1
-            elif age<45:
-                ages['40-44'] += 1
-            elif age<50:
-                ages['45-49'] += 1
+    def calculate_aged_data(data):  
+        ages = {'NA':0, '<20':0, '20-24':0, '25-29':0, '30-34':0, '35-39':0, '40-44': 0, '45-49':0, '>=50':0}
+        Year = time.localtime().tm_year
+        s, cntr = 0, 0
+        m, f = 0, 0
+        edlevel = 0
+        
+        for line in data:
+            if line[0]==None:
+                ages['NA'] += 1
             else:
-                ages['>=50'] += 1
-                
-            if line[1]=='m':
-                m += 1
-            elif line[1]=='f':
-                f += 1
-                
-            if line[2] in ['p','m','b','a']:
-                edlevel += 1
+                age = Year - int(line[0])
+                s += age
+                cntr += 1
+                if age<20:
+                    ages['<20'] += 1
+                elif age<25:
+                    ages['20-24'] += 1
+                elif age<30:
+                    ages['25-29'] += 1
+                elif age<35:
+                    ages['30-34'] += 1
+                elif age<40:
+                    ages['35-39'] += 1
+                elif age<45:
+                    ages['40-44'] += 1
+                elif age<50:
+                    ages['45-49'] += 1
+                else:
+                    ages['>=50'] += 1
+                    
+                if line[1]=='m':
+                    m += 1
+                elif line[1]=='f':
+                    f += 1
+                    
+                if line[2] in ['p','m','b','a']:
+                    edlevel += 1
+        return ages, s//cntr, f, edlevel
+        
+    ages, midage, f, edlevel = calculate_aged_data(data)
                 
     result["User age groups"] = (ages, '\n'.join(["{0}:\t{1:,d}\t({2:.2f}%)".format(age,ages[age],100*float(ages[age])/users_amount) for age in ages_list]))
-    result["Age medium"] = (s//cntr, "{0} years".format(s//cntr))
+    result["Age medium"] = (midage, "{0} years".format(midage))
     result["Female user percentage"] = (f, "{0:.2f}%".format(float(f)*100/users_amount))
     result["Bachelor and higher educated users (percents)"] = (edlevel, "{0:.2f}%".format(float(edlevel)*100/users_amount))
+    
+    # Age groups and education level and certificates
+    cursor = db.cursor()
+    sql = "SELECT b.year_of_birth AS YEAR, b.gender AS gender, b.level_of_education AS level " \
+            "FROM student_courseenrollment a " \
+            "LEFT JOIN auth_userprofile b ON a.user_id = b.user_id " \
+            "LEFT JOIN certificates_generatedcertificate c ON a.user_id = c.user_id " \
+            "WHERE a.course_id = '{0}' AND c.status = 'downloadable' AND c.course_id = '{0}'".format(course_title)
+    cursor.execute(sql)
+    data2 = cursor.fetchall()
+    
+    ages2, _, f2, edlevel2 = calculate_aged_data(data2)
+    result["Percentage of certificates for age groups"] = (ages2, '\n'.join(["{0}:\t{1:d}%)".format(age,100*ages2[age]//ages[age]) for age in ages_list]))
+    result["Female cerified users"] = (f2, "{0:.2f}%".format(float(f2)*100/len(data2)))
+    result["Bachelor and higher with certificates (percents)"] = (edlevel2, "{0:.2f}%".format(float(edlevel2)*100/len(data2))
     
     return result
     
