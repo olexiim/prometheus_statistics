@@ -126,7 +126,7 @@ def get_course_data(course_title):
     ages2, _, f2, edlevel2 = calculate_aged_data(data2)
     result["Percentage of certificates for age groups"] = (ages2, '\n'.join(["{0}:\t{1:d}%)".format(age,100*ages2[age]//ages[age]) for age in ages_list]))
     result["Female cerified users"] = (f2, "{0:.2f}%".format(float(f2)*100/len(data2)))
-    result["Bachelor and higher with certificates (percents)"] = (edlevel2, "{0:.2f}%".format(float(edlevel2)*100/len(data2))
+    result["Bachelor and higher with certificates (percents)"] = (edlevel2, "{0:.2f}%".format(float(edlevel2)*100/len(data2)))
     
     return result
     
