@@ -193,10 +193,10 @@ def get_course_data(course_title):
         cursor.execute(sql)
         data = cursor.fetchone()
         videos[vi][3] = data[0]
-        print sql, data[0]
+#        print sql, data[0]
         video_result += [u"{0}: {1:d} ({2:.2f}%)".format(videos[vi][1],videos[vi][3],foo(videos[vi][3]))]
         if videos[vi][0]==1:
-            first_video_result += video_result[-1]
+            first_video_result += [video_result[-1]]
         
     problem_positive_result, problem_result = [], []
     for pi in range(len(problems)):
