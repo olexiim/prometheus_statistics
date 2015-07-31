@@ -21,6 +21,7 @@ mongo_url = 'localhost'
 mongo_port = 27017
 mongo_db = None
 mongo_col = None
+mongo_edxapp = None
 
 headers = ["Number of registered users",
            "Number of certificates",
@@ -143,6 +144,41 @@ def get_course_data(course_title):
     result["Number of forum message per one active user"] = (posts_number, "{0:.2f}".format(float(posts_number)/forum_active_users))
     result["Number of forum message per one user"] = (float(posts_number)/users_amount, "{0:.2f}".format(float(posts_number)/users_amount))
     
+    # Get course content
+    course_org, course_num, course_name = course_title.split("/")
+    videos, tests = [], []
+    chapters = mongo_edxapp.modulestore.find({"_id.org":course_org,"_id.course":course_num,"_id.name":course_name,"_id.category":"course"},{"definition.children":1,"_id":0})[0]["definition"]["children"]
+    for chapter in chapters:
+        chapter_name = chapter.split("/")[-1]
+        res_a = mongo_edxapp.modulestore.find({"_id.name":chapter_name},{"_id":0})[0]
+        seqs, chapter_title = res_a["definition"]["children"], res_a["metadata"]["display_name"]
+        
+        print chapter_title
+
+        for sequential in seqs:
+            sequential_name = sequential.split("/")[-1]
+            res_b = mongo_edxapp.modulestore.find({"_id.name":sequential_name},{"_id":0})[0]
+            verticals, sequential_title = res_b["definition"]["children"], res_b["metadata"]["display_name"]
+            
+            print "--", sequential_title
+
+            for vertical in verticals:
+                vertical_name = vertical.split("/")[-1]
+                res_c = mongo_edxapp.modulestore.find({"_id.name":vertical_name},{"_id":0})[0]
+                vitems, vertical_title = res_c["definition"]["children"], res_c["metadata"]["display_name"]
+                
+                print "-----", vertical_title
+                
+                for vitem in vitems:
+                    vitem_category, vitem_name = vitem.split("/")[-2::1]
+                    if vitem_category in ['video','problem']:
+                        vitem_title = "(0} :: {1} :: {2}".format(chapter_title, sequential_title, vertical_title)
+                        print "--------", vitem_title
+                        if vitem_category=='video':
+                            videos.append([vitem_title ,vitem_name,0])
+                        elif vitem_category=='problem':
+                            tests.append([vitem_title ,vitem_name,0])
+    
     return result
     
 def write_course_data_detailed(course_title, data, output_file):
@@ -185,6 +221,7 @@ if __name__=="__main__":
     
     mongo_client = MongoClient(options.mongo_url, options.mongo_port)
     mongo_db = mongo_client.cs_comments_service_development
+    mongo_edxapp = mongo_client.edxapp
     
     output_file = options.output_file
     
