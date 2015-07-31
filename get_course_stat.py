@@ -67,10 +67,15 @@ def get_course_data(course_title):
     ages_list = ('NA', '<20', '20-24', '25-29', '30-34', '35-39', '40-44', '45-49', '>=50')
     Year = time.localtime().tm_year
     for line in data:
+        s, cntr = 0, 0
+        m, f = 0, 0
+        edlevel = 0
         if line[0]==None:
             ages['NA'] += 1
         else:
             age = Year - int(line[0])
+            s += age
+            cntr += 1
             if age<20:
                 ages['<20'] += 1
             elif age<25:
@@ -88,7 +93,18 @@ def get_course_data(course_title):
             else:
                 ages['>=50'] += 1
                 
-    result["User age groups"] = (ages, '\n'.join(["{0}:\t{1:,d}\t({1:.2f}%)".format(age,ages[age],100*float(ages[age])/users_amount) for age in ages_list]))
+            if line[1]=='m':
+                m += 1
+            elif line[1]=='f':
+                f += 1
+                
+            if line[2] in ['p','m','b','a']:
+                edlevel += 1
+                
+    result["User age groups"] = (ages, '\n'.join(["{0}:\t{1:,d}\t({2:.2f}%)".format(age,ages[age],100*float(ages[age])/users_amount) for age in ages_list]))
+    result["Age medium"] = (s//cntr, "{0} years".format(s//cntr))
+    result["Female user percentage"] = (f, "{0:.2f}%".format(float(f)*100/users_amount))
+    result["Bachelor and higher educated users (percents)"] = (edlevel, "{0:.2f}%".format(float(edlevel)*100/users_amount))
     
     return result
     
