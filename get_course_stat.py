@@ -113,9 +113,10 @@ def write_course_data_detailed(course_title, data, output_file):
     with open(output_file,'w') as f:
         f.write("Course: {0}\n\n".format(course_title))
         i = 1
-        for key,value in data.iteritems():
-            f.write("{idx}. {title}\n{value}\n\n".format(idx=i, title=key, value=value[1]))
-            i += 1
+        for header in headers:
+            if data.has_key(header):
+                f.write("{idx}. {title}\n{value}\n\n".format(idx=i, title=header, value=data[header][1]))
+                i += 1
 
 if __name__=="__main__":
     usage = "usage: %prog [options] coursename"
