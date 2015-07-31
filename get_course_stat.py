@@ -35,7 +35,7 @@ headers = ["Number of registered users",
            "Percentage of forum active users",
            "Number of forum message per one user",
            "Number of forum message per one active user",
-           "Number of users that watched first video of every week",
+           "Number of users that watched videos",
            "Number of users that started to pass the problem",
            "Number of users that recieved non-zero grade for problem",
 ]
@@ -208,7 +208,7 @@ def get_course_data(course_title):
         problems[pi][3] = data[0]
         problem_positive_result += ["{0}: {1:d} ({2:.2f}%)".format(problems[pi][0],problems[pi][3],foo(problems[pi][3]))]
         
-    result["Number of users that watched first video of every week"] = "\n".join(video_result)
+    result["Number of users that watched videos"] = "\n".join(video_result)
     result["Number of users that started to pass the problem"] = "\n".join(problem_result)
     result["Number of users that recieved non-zero grade for problem"] = "\n".join(problem_positive_result)
     
