@@ -43,6 +43,7 @@ def get_course_data(course_title):
     cursor.execute(sql)
     data = cursor.fetchone()
     result["Number of registered users"] = (data[0], "{0:,d}".format(data[0]))
+    users_amount = data[0]
     
     # Number of certificates
     cursor = db.cursor()
@@ -50,7 +51,7 @@ def get_course_data(course_title):
             "WHERE course_id LIKE '%s' AND status LIKE 'downloadable'" % (course_title)
     cursor.execute(sql)
     data = cursor.fetchone()
-    percent = 100*float(data[0]) / result["Number of registered users"][0]
+    percent = 100*float(data[0]) / users_amount
     result["Number of certificates"] = (data[0], "{0:,d} ({1:.2f}%)".format(data[0],percent))
     
     # Age groups and education level
@@ -87,7 +88,7 @@ def get_course_data(course_title):
             else:
                 ages['>=50'] += 1
                 
-    result["User age groups"] = (ages, '\n'.join(["{0}:\t{1:,d}".format(age,ages[age]) for age in ages_list]))
+    result["User age groups"] = (ages, '\n'.join(["{0}:\t{1:,d}\t({1:.2f}%)".format(age,ages[age],100*float(ages[age])/users_amount) for age in ages_list]))
     
     return result
     
