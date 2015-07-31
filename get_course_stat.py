@@ -41,7 +41,7 @@ def get_course_data(course_title):
     sql = "SELECT COUNT( 1 ) FROM student_courseenrollment WHERE course_id LIKE '%s'" % (course_title)
     cursor.execute(sql)
     data = cursor.fetchone()
-    result["Number of registered users"] = data[0]
+    result["Number of registered users"] = (data[0], "{0:,d}".format(data[0]))
     
     # Number of certificates
     cursor = db.cursor()
@@ -49,7 +49,8 @@ def get_course_data(course_title):
             "WHERE course_id LIKE '%s' AND status LIKE 'downloadable'" % (course_title)
     cursor.execute(sql)
     data = cursor.fetchone()
-    result["Number of certificates"] = data[0]
+    percent = data[0] / result["Number of registered users"][0]
+    result["Number of certificates"] = (data[0], "{0:,d} ({1:.2f}%%)".format(data[0],percent))
     
     return result
     
@@ -58,7 +59,7 @@ def write_course_data_detailed(course_title, data, output_file):
         f.write("Course: {0}\n\n".format(course_title))
         i = 1
         for key,value in data.iteritems():
-            f.write("{idx}. {title}\n{value:,d}\n\n".format(idx=i, title=key, value=value))
+            f.write("{idx}. {title}\n{value}\n\n".format(idx=i, title=key, value=value[1]))
             i += 1
 
 if __name__=="__main__":
