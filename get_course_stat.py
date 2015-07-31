@@ -8,6 +8,7 @@ Created on Tue Jul 14 23:30:16 2015
 import MySQLdb
 import time
 from optparse import OptionParser
+from pymongo import MongoClient
 
 db_url = "localhost"
 db_user = ""
@@ -15,6 +16,11 @@ db_pass = ""
 db_name = ""
 output_file = ''
 db = None
+
+mongo_url = 'localhost'
+mongo_port = 27017
+mongo_db = None
+mongo_col = None
 
 headers = ["Number of registered users",
            "Number of certificates",
@@ -26,11 +32,11 @@ headers = ["Number of registered users",
            "Age medium",
            "Female user percentage",
            "Female cerified users",
+           "Bachelor and higher educated users (percents)",
+           "Bachelor and higher with certificates (percents)",
            "Percentage of forum active users",
            "Number of forum message per one user",
            "Number of forum message per one active user",
-           "Bachelor and higher educated users (percents)",
-           "Bachelor and higher with certificates (percents)",
 ]
 
 #def write_output_header(output_file):
@@ -124,9 +130,18 @@ def get_course_data(course_title):
     data2 = cursor.fetchall()
     
     ages2, _, f2, edlevel2 = calculate_aged_data(data2)
-    result["Percentage of certificates for age groups"] = (ages2, '\n'.join(["{0}:\t{1:d}%)".format(age,100*ages2[age]//ages[age]) for age in ages_list]))
+    result["Percentage of certificates for age groups"] = (ages2, '\n'.join(["{0}:\t{1:d}%".format(age,100*ages2[age]//ages[age]) for age in ages_list]))
     result["Female cerified users"] = (f2, "{0:.2f}%".format(float(f2)*100/len(data2)))
     result["Bachelor and higher with certificates (percents)"] = (edlevel2, "{0:.2f}%".format(float(edlevel2)*100/len(data2)))
+    
+    # Percentage of forum active users
+    forum_active_users = len(mongo_db.contents.distinct("author_id",{"course_id":course_title}))
+    result["Percentage of forum active users"] = (forum_active_users, "{0:,d}".format(forum_active_users))
+    
+    # Number of forum message per one user
+    posts_number = mongo_db.contents.find({"course_id":course_title}).count()
+    result["Number of forum message per one active user"] = (posts_number/forum_active_users, "{0:.2f}".format(posts_number/forum_active_users))
+    result["Number of forum message per one user"] = (posts_number/users_amount, "{0:.2f}".format(posts_number/users_amount))
     
     return result
     
@@ -155,7 +170,11 @@ if __name__=="__main__":
     parser.add_option("-a", "--output-append", dest="output_append", help="whether append data to existed file", 
                       metavar="OUTPUT_APPEND", action="store_true")
     parser.add_option("-f", "--output-format", dest="output_format", help="csv|detailed (default)", 
-                      metavar="OUTPUT_FORMAT", default='detailed')                  
+                      metavar="OUTPUT_FORMAT", default='detailed') 
+    parser.add_option("--mongo-url", dest="mongo_url", help="mongoDB URL", 
+                      metavar="MONGODB_URL", default=mongo_url)
+    parser.add_option("--mongo-port", dest="mongo_port", help="mongoDB port", 
+                      metavar="MONGODB_PORT", default=mongo_port)
     
     (options, args) = parser.parse_args()
     if len(args) != 1:
@@ -163,6 +182,9 @@ if __name__=="__main__":
     course = args[0]
                   
     db = MySQLdb.connect(options.db_url, options.db_user, options.db_pass, options.db_name )
+    
+    mongo_client = MongoClient(mongo_url, mongo_port)
+    mongo_db = mongo_client.cs_comments_service_development
     
     output_file = options.output_file
     
