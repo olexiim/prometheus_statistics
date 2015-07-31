@@ -49,8 +49,8 @@ def get_course_data(course_title):
             "WHERE course_id LIKE '%s' AND status LIKE 'downloadable'" % (course_title)
     cursor.execute(sql)
     data = cursor.fetchone()
-    percent = data[0] / result["Number of registered users"][0]
-    result["Number of certificates"] = (data[0], "{0:,d} ({1:.2f}%%)".format(data[0],percent))
+    percent = float(data[0]) / result["Number of registered users"][0]
+    result["Number of certificates"] = (data[0], "{0:,d} ({1:.2f}%)".format(data[0],percent))
     
     return result
     
