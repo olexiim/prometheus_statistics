@@ -169,15 +169,18 @@ def get_course_data(course_title):
                 
                 print "-----", vertical_title
                 
+                vi, pi = 0, 0
                 for vitem in vitems:
                     vitem_category, vitem_name = vitem.split("/")[-2::1]
                     if vitem_category in ['video','problem']:
-                        vitem_title = "(0} :: {1} :: {2}".format(chapter_title, sequential_title, vertical_title)
+                        vitem_title = "{0} :: {1} :: {2}".format(chapter_title.encode('utf-8'), sequential_title.encode('utf-8'), vertical_title.encode('utf-8'))
                         print "--------", vitem_title
                         if vitem_category=='video':
-                            videos.append([vitem_title ,vitem_name,0])
+                            vi += 1
+                            videos.append([vitem_title+"({0})".format(vi) ,vitem_name,0])
                         elif vitem_category=='problem':
-                            tests.append([vitem_title ,vitem_name,0])
+                            pi += 1
+                            tests.append([vitem_title+"({0})".format(pi) ,vitem_name,0])
     
     return result
     
