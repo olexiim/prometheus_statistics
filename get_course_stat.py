@@ -48,7 +48,7 @@ def get_course_data(course_title):
 def write_course_data_detailed(data, output_file):
     with open(output_file,'w') as f:
         i = 1
-        for key,value in data.iteritems:
+        for key,value in data.iteritems():
             f.write("{idx}. {title}\n{value}\n\n".format(idx=i, title=key, value=value))
             i += 1
 
