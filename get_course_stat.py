@@ -45,7 +45,7 @@ headers = ["Number of registered users",
 #def write_output_header(output_file):
     
 
-def get_course_data(course_title):
+def get_course_data(course_title, output_csv=False):
     result = {}
 
     # Number of registered users
@@ -66,7 +66,10 @@ def get_course_data(course_title):
     cursor.execute(sql)
     data = cursor.fetchone()
     percent = 100*float(data[0]) / users_amount
-    result["Number of certificates"] = (data[0], "{0:,d} ({1:.2f}%)".format(data[0],percent))
+    if output_csv:
+        result["Number of certificates"] = (data[0], "{0:,d}".format(data[0]))
+    else:
+        result["Number of certificates"] = (data[0], "{0:,d} ({1:.2f}%)".format(data[0],percent))
     
     # Age groups and education level
     cursor = db.cursor()
@@ -124,10 +127,16 @@ def get_course_data(course_title):
         
     ages, midage, f, edlevel = calculate_aged_data(data)
                 
-    result["User age groups"] = (ages, '\n'.join(["{0}:\t{1:,d}\t({2:.2f}%)".format(age,ages[age],100*float(ages[age])/users_amount) for age in ages_list]))
-    result["Age medium"] = (midage, "{0} years".format(midage))
-    result["Female user percentage"] = (f, "{0:.2f}%".format(float(f)*100/users_amount))
-    result["Bachelor and higher educated users (percents)"] = (edlevel, "{0:.2f}%".format(float(edlevel)*100/users_amount))
+    if output_csv:
+        result["User age groups"] = (ages, ';'.join(["{0}:\t{1:,d}\t({2:.2f}%)".format(age,ages[age],100*float(ages[age])/users_amount) for age in ages_list]))
+        result["Age medium"] = (midage, "{0}".format(midage))
+        result["Female user percentage"] = (f, "{0:.6f}".format(float(f)*100/users_amount))
+        result["Bachelor and higher educated users (percents)"] = (edlevel, "{0:.6f}".format(float(edlevel)*100/users_amount))
+    else:
+        result["User age groups"] = (ages, '\n'.join(["{0}:\t{1:,d}\t({2:.2f}%)".format(age,ages[age],100*float(ages[age])/users_amount) for age in ages_list]))
+        result["Age medium"] = (midage, "{0} years".format(midage))
+        result["Female user percentage"] = (f, "{0:.2f}%".format(float(f)*100/users_amount))
+        result["Bachelor and higher educated users (percents)"] = (edlevel, "{0:.2f}%".format(float(edlevel)*100/users_amount))
     
     # Age groups and education level and certificates
     cursor = db.cursor()
@@ -142,12 +151,19 @@ def get_course_data(course_title):
     ages2, _, f2, edlevel2 = calculate_aged_data(data2)
     result["Percentage of certificates for age groups"] = (ages2, '\n'.join(["{0}:\t{1:d}%".format(age,100*ages2[age]//ages[age]) for age in ages_list if ages[age]!=0]))
     if len(data2)!=0:
-        result["Female cerified users"] = (f2, "{0:.2f}%".format(float(f2)*100/len(data2)))
-        result["Bachelor and higher with certificates (percents)"] = (edlevel2, "{0:.2f}%".format(float(edlevel2)*100/len(data2)))
+        if output_csv:
+            result["Female cerified users"] = (f2, "{0:.6f}".format(float(f2)*100/len(data2)))
+            result["Bachelor and higher with certificates (percents)"] = (edlevel2, "{0:.6f}".format(float(edlevel2)*100/len(data2)))
+        else:
+            result["Female cerified users"] = (f2, "{0:.2f}%".format(float(f2)*100/len(data2)))
+            result["Bachelor and higher with certificates (percents)"] = (edlevel2, "{0:.2f}%".format(float(edlevel2)*100/len(data2)))
     
     # Percentage of forum active users
     forum_active_users = len(mongo_db.contents.distinct("author_id",{"course_id":course_title}))
-    result["Percentage of forum active users"] = (forum_active_users, "{0:.2f}%".format(100*float(forum_active_users)/users_amount))
+    if output_csv:
+        result["Percentage of forum active users"] = (forum_active_users, "{0:.6f}".format(100*float(forum_active_users)/users_amount))
+    else:
+        result["Percentage of forum active users"] = (forum_active_users, "{0:.2f}%".format(100*float(forum_active_users)/users_amount))
     
     # Number of forum message per one user
     posts_number = mongo_db.contents.find({"course_id":course_title}).count()
@@ -208,6 +224,7 @@ def get_course_data(course_title):
                             
     foo = lambda x: 100*float(x)/users_amount
     video_result, first_video_result = [], []
+    video_result_header, first_video_result_header = [], []
     for vi in range(len(videos)):
         cursor = db.cursor()
         sql = "SELECT COUNT(1) FROM courseware_studentmodule WHERE module_id ='{0}'".format(videos[vi][2])
@@ -215,41 +232,75 @@ def get_course_data(course_title):
         data = cursor.fetchone()
         videos[vi][3] = data[0]
 #        print sql, data[0]
-        video_result += [u"{0}: {1:d} ({2:.2f}%)".format(videos[vi][1],videos[vi][3],foo(videos[vi][3]))]
+        if output_csv:
+            video_result_header += [videos[vi][1]]
+            video_result += [videos[vi][3]]
+        else:
+            video_result += [u"{0}: {1:d} ({2:.2f}%)".format(videos[vi][1],videos[vi][3],foo(videos[vi][3]))]
         if videos[vi][0]:
+            if output_csv:
+                first_video_result_header += [video_result_header[-1]]
             first_video_result += [video_result[-1]]
         
     problem_positive_result, problem_result = [], []
+    problem_positive_result_header, problem_result_header = [], []
     for pi in range(len(problems)):
         cursor = db.cursor()
         sql = "SELECT COUNT(1) FROM courseware_studentmodule WHERE module_id ='{0}'".format(problems[pi][2])
         cursor.execute(sql)
         data = cursor.fetchone()
         problems[pi][3] = data[0]
-        problem_result += [u"{0}: {1:d} ({2:.2f}%)".format(problems[pi][1],problems[pi][3],foo(problems[pi][3]))]
+        if output_csv:
+            problem_result_header += [problems[pi][1]]
+            problem_result += [problems[pi][3]]
+        else:
+            problem_result += [u"{0}: {1:d} ({2:.2f}%)".format(problems[pi][1],problems[pi][3],foo(problems[pi][3]))]
         
         cursor = db.cursor()
         sql = "SELECT COUNT(1) FROM courseware_studentmodule WHERE module_id ='{0}' AND grade >0".format(problems[pi][2])
         cursor.execute(sql)
         data = cursor.fetchone()
         problems[pi][4] = data[0]
-        problem_positive_result += [u"{0}: {1:d} ({2:.2f}%)".format(problems[pi][1],problems[pi][4],foo(problems[pi][4]))]
+        if output_csv:
+            problem_positive_result_header += [problems[pi][1]]
+            problem_positive_result += [problems[pi][4]]
+        else:
+            problem_positive_result += [u"{0}: {1:d} ({2:.2f}%)".format(problems[pi][1],problems[pi][4],foo(problems[pi][4]))]
         
-    result["Number of users that watched videos"] = (video_result, u"\n".join(video_result))
-    result["Number of users that watched first videos of every week"] = (first_video_result, u"\n".join(first_video_result))
-    result["Number of users that started to pass the problem"] = (problem_result, u"\n".join(problem_result))
-    result["Number of users that recieved non-zero grade for problem"] = (problem_positive_result, u"\n".join(problem_positive_result))
+    if output_csv:
+        result["Number of users that watched videos"] = (video_result, u";".join(video_result), u";".join(["Number of users that watched videos: "+x for x in video_result_header]))
+        result["Number of users that watched first videos of every week"] = (first_video_result, u";".join(first_video_result), u";".join(["Number of users that watched first videos of every week: "+ x for x in first_video_result_header]))
+        result["Number of users that started to pass the problem"] = (problem_result, u";".join(problem_result), u";".join(["Number of users that started to pass the problem: "+x for x in problem_result_header]))
+        result["Number of users that recieved non-zero grade for problem"] = (problem_positive_result, u";".join(problem_positive_result), u";".join(["Number of users that recieved non-zero grade for problem: "+x for x in problem_positive_result_header]))
+    else:
+        result["Number of users that watched videos"] = (video_result, u"\n".join(video_result))
+        result["Number of users that watched first videos of every week"] = (first_video_result, u"\n".join(first_video_result))
+        result["Number of users that started to pass the problem"] = (problem_result, u"\n".join(problem_result))
+        result["Number of users that recieved non-zero grade for problem"] = (problem_positive_result, u"\n".join(problem_positive_result))
     
     return result
     
-def write_course_data_detailed(course_title, data, output_file):
-    with codecs.open(output_file,'w',encoding='utf8') as f:
-        f.write("Course: {0}\n\n".format(course_title))
-        i = 1
-        for header in headers:
-            if data.has_key(header):
-                f.write(u"{idx}. {title}\n{value}\n\n".format(idx=i, title=header, value=data[header][1]))
-                i += 1
+def write_course_data_detailed(course_title, data, output_file, output_format='detailed'):
+    if output_format=='csv':
+        with codecs.open(output_file,'w',encoding='utf8') as f:
+            line_1, line_2 = [], []
+            for header in headers:
+                if header in ["Number of users that watched videos", "Number of users that watched first videos of every week", "Number of users that started to pass the problem", "Number of users that recieved non-zero grade for problem"]:
+                    line_1 += [data[header][2]]
+                else:
+                    line_1 += [header]
+                line_2 += [data[header][1]]
+            f.write(";".join(line_1)+"\n")
+            f.write(";".join(line_2))
+                
+    else:
+        with codecs.open(output_file,'w',encoding='utf8') as f:
+            f.write("Course: {0}\n\n".format(course_title))
+            i = 1
+            for header in headers:
+                if data.has_key(header):
+                    f.write(u"{idx}. {title}\n{value}\n\n".format(idx=i, title=header, value=data[header][1]))
+                    i += 1
                 
 def get_all_courses():
     cursor = db.cursor()
@@ -299,12 +350,16 @@ if __name__=="__main__":
     else:
         courses = [course]
         
+    file_ext = '.txt'
+    if options.output_format=='csv':
+        file_ext = '.csv'
+        
     for course_title in courses:
         print "Process", course_title
-        course_data = get_course_data(course_title)
+        course_data = get_course_data(course_title, output_csv=(options.output_format=='csv'))
         if course_data==None:
             continue
         
-        output_file = "{0}_output.txt".format(course_title.replace('/','_'))
+        output_file = "{0}_output.{1}".format(course_title.replace('/','_'), file_ext)
         if options.output_format=='detailed':
-            write_course_data_detailed(course_title, course_data, output_file)
+            write_course_data_detailed(course_title, course_data, output_file, options.output_format)
