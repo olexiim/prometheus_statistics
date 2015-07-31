@@ -55,6 +55,9 @@ def get_course_data(course_title):
     data = cursor.fetchone()
     result["Number of registered users"] = (data[0], "{0:,d}".format(data[0]))
     users_amount = data[0]
+
+    if users_amount==0:
+        return None
     
     # Number of certificates
     cursor = db.cursor()
@@ -113,7 +116,11 @@ def get_course_data(course_title):
                     
                 if line[2] in ['p','m','b','a']:
                     edlevel += 1
-        return ages, s//cntr, f, edlevel
+
+        if cntr==0:
+            return ages, None, f, edlevel
+        else:
+            return ages, s//cntr, f, edlevel
         
     ages, midage, f, edlevel = calculate_aged_data(data)
                 
@@ -133,9 +140,10 @@ def get_course_data(course_title):
     data2 = cursor.fetchall()
     
     ages2, _, f2, edlevel2 = calculate_aged_data(data2)
-    result["Percentage of certificates for age groups"] = (ages2, '\n'.join(["{0}:\t{1:d}%".format(age,100*ages2[age]//ages[age]) for age in ages_list]))
-    result["Female cerified users"] = (f2, "{0:.2f}%".format(float(f2)*100/len(data2)))
-    result["Bachelor and higher with certificates (percents)"] = (edlevel2, "{0:.2f}%".format(float(edlevel2)*100/len(data2)))
+    result["Percentage of certificates for age groups"] = (ages2, '\n'.join(["{0}:\t{1:d}%".format(age,100*ages2[age]//ages[age]) for age in ages_list if ages[age]!=0]))
+    if len(data2)!=0:
+        result["Female cerified users"] = (f2, "{0:.2f}%".format(float(f2)*100/len(data2)))
+        result["Bachelor and higher with certificates (percents)"] = (edlevel2, "{0:.2f}%".format(float(edlevel2)*100/len(data2)))
     
     # Percentage of forum active users
     forum_active_users = len(mongo_db.contents.distinct("author_id",{"course_id":course_title}))
@@ -143,32 +151,43 @@ def get_course_data(course_title):
     
     # Number of forum message per one user
     posts_number = mongo_db.contents.find({"course_id":course_title}).count()
-    result["Number of forum message per one active user"] = (posts_number, "{0:.2f}".format(float(posts_number)/forum_active_users))
+    if forum_active_users!=0:
+        result["Number of forum message per one active user"] = (posts_number, "{0:.2f}".format(float(posts_number)/forum_active_users))
     result["Number of forum message per one user"] = (float(posts_number)/users_amount, "{0:.2f}".format(float(posts_number)/users_amount))
     
     # Get course content
     course_org, course_num, course_name = course_title.split("/")
     videos, problems = [], []
-    chapters = mongo_edxapp.modulestore.find({"_id.org":course_org,"_id.course":course_num,"_id.name":course_name,"_id.category":"course"},{"definition.children":1,"_id":0})[0]["definition"]["children"]
+    res = mongo_edxapp.modulestore.find({"_id.org":course_org,"_id.course":course_num,"_id.name":course_name,"_id.category":"course"},{"definition.children":1,"_id":0})
+    if res.count()==0:
+        chapters = []
+    else:
+        chapters = res[0]["definition"]["children"]
     for chapter in chapters:
         chapter_name = chapter.split("/")[-1]
-        res_a = mongo_edxapp.modulestore.find({"_id.name":chapter_name},{"_id":0})[0]
-        seqs, chapter_title = res_a["definition"]["children"], res_a["metadata"]["display_name"]
+        res_a = mongo_edxapp.modulestore.find({"_id.name":chapter_name},{"_id":0})
+        if res_a.count()==0:
+            continue
+        seqs, chapter_title = res_a[0]["definition"]["children"], res_a[0]["metadata"]["display_name"]
         first_video_in_chapter = True
         
 #        print chapter_title
 
         for sequential in seqs:
             sequential_name = sequential.split("/")[-1]
-            res_b = mongo_edxapp.modulestore.find({"_id.name":sequential_name},{"_id":0})[0]
-            verticals, sequential_title = res_b["definition"]["children"], res_b["metadata"]["display_name"]
+            res_b = mongo_edxapp.modulestore.find({"_id.name":sequential_name},{"_id":0})
+            if res_b.count()==0:
+                continue
+            verticals, sequential_title = res_b[0]["definition"]["children"], res_b[0]["metadata"]["display_name"]
             
 #            print "--", sequential_title
 
             for vertical in verticals:
                 vertical_name = vertical.split("/")[-1]
-                res_c = mongo_edxapp.modulestore.find({"_id.name":vertical_name},{"_id":0})[0]
-                vitems, vertical_title = res_c["definition"]["children"], res_c["metadata"]["display_name"]
+                res_c = mongo_edxapp.modulestore.find({"_id.name":vertical_name},{"_id":0})
+                if res_c.count()==0:
+                    continue
+                vitems, vertical_title = res_c[0]["definition"]["children"], res_c[0]["metadata"]["display_name"]
                 
 #                print "-----", vertical_title
                 
@@ -283,8 +302,9 @@ if __name__=="__main__":
     for course_title in courses:
         print "Process", course_title
         course_data = get_course_data(course_title)
+        if course_data==None:
+            continue
         
-        if output_file=='':
-            output_file = "{0}_output.txt".format(course_title.replace('/','_'))
+        output_file = "{0}_output.txt".format(course_title.replace('/','_'))
         if options.output_format=='detailed':
             write_course_data_detailed(course_title, course_data, output_file)

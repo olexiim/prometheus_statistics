@@ -1,0 +1,57 @@
+Course: NaUKMA/103/2015_T1
+
+1. Number of registered users
+7,030
+
+2. Number of certificates
+0 (0.00%)
+
+3. User age groups
+NA:	381	(5.42%)
+<20:	679	(9.66%)
+20-24:	1,761	(25.05%)
+25-29:	1,598	(22.73%)
+30-34:	1,277	(18.17%)
+35-39:	743	(10.57%)
+40-44:	379	(5.39%)
+45-49:	174	(2.48%)
+>=50:	124	(1.76%)
+
+4. Percentage of certificates for age groups
+NA:	0%
+<20:	0%
+20-24:	0%
+25-29:	0%
+30-34:	0%
+35-39:	0%
+40-44:	0%
+45-49:	0%
+>=50:	0%
+
+5. Age medium
+28 years
+
+6. Female user percentage
+53.74%
+
+7. Bachelor and higher educated users (percents)
+84.57%
+
+8. Percentage of forum active users
+0.00%
+
+9. Number of forum message per one user
+0.00
+
+10. Number of users that watched first videos of every week
+
+
+11. Number of users that watched videos
+
+
+12. Number of users that started to pass the problem
+
+
+13. Number of users that recieved non-zero grade for problem
+
+

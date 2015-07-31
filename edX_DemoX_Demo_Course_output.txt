@@ -1,0 +1,112 @@
+Course: edX/DemoX/Demo_Course
+
+1. Number of registered users
+19
+
+2. Number of certificates
+0 (0.00%)
+
+3. User age groups
+NA:	6	(31.58%)
+<20:	0	(0.00%)
+20-24:	2	(10.53%)
+25-29:	4	(21.05%)
+30-34:	5	(26.32%)
+35-39:	3	(15.79%)
+40-44:	1	(5.26%)
+45-49:	0	(0.00%)
+>=50:	0	(0.00%)
+
+4. Percentage of certificates for age groups
+NA:	0%
+20-24:	0%
+25-29:	0%
+30-34:	0%
+35-39:	0%
+40-44:	0%
+
+5. Age medium
+31 years
+
+6. Female user percentage
+47.37%
+
+7. Bachelor and higher educated users (percents)
+78.95%
+
+8. Percentage of forum active users
+15.79%
+
+9. Number of forum message per one user
+0.37
+
+10. Number of forum message per one active user
+2.33
+
+11. Number of users that watched first videos of every week
+Introduction :: Demo Course Overview :: Introduction: Video and Sequences (1): 5 (26.32%)
+Example Week 1: Getting Started :: Lesson 1 - Getting Started :: Getting Started (1): 0 (0.00%)
+Example Week 2: Get Interactive :: Lesson 2 - Let's Get Interactive! :: New Unit (1): 0 (0.00%)
+
+12. Number of users that watched videos
+Introduction :: Demo Course Overview :: Introduction: Video and Sequences (1): 5 (26.32%)
+Example Week 1: Getting Started :: Lesson 1 - Getting Started :: Getting Started (1): 0 (0.00%)
+Example Week 1: Getting Started :: Lesson 1 - Getting Started :: Working with Videos (1): 6 (31.58%)
+Example Week 1: Getting Started :: Lesson 1 - Getting Started :: Videos on edX (1): 2 (10.53%)
+Example Week 1: Getting Started :: Lesson 1 - Getting Started :: Video Demonstrations (1): 3 (15.79%)
+Example Week 1: Getting Started :: Lesson 1 - Getting Started :: Video Demonstrations (1): 0 (0.00%)
+Example Week 1: Getting Started :: Lesson 1 - Getting Started :: Video Presentation Styles (1): 1 (5.26%)
+Example Week 2: Get Interactive :: Lesson 2 - Let's Get Interactive! :: New Unit (1): 0 (0.00%)
+
+13. Number of users that started to pass the problem
+Example Week 1: Getting Started :: Lesson 1 - Getting Started :: Interactive Questions (1): 11 (57.89%)
+Example Week 1: Getting Started :: Lesson 1 - Getting Started :: Reading Assignments (1): 11 (57.89%)
+Example Week 1: Getting Started :: Lesson 1 - Getting Started :: Reading Assignments (2): 11 (57.89%)
+Example Week 1: Getting Started :: Lesson 1 - Getting Started :: New Unit (1): 0 (0.00%)
+Example Week 1: Getting Started :: Homework - Question Styles :: Pointing on a Picture (1): 12 (63.16%)
+Example Week 1: Getting Started :: Homework - Question Styles :: Drag and Drop (1): 12 (63.16%)
+Example Week 1: Getting Started :: Homework - Question Styles :: Multiple Choice Questions (1): 12 (63.16%)
+Example Week 1: Getting Started :: Homework - Question Styles :: Mathematical Expressions (1): 12 (63.16%)
+Example Week 1: Getting Started :: Homework - Question Styles :: Chemical Equations (1): 12 (63.16%)
+Example Week 1: Getting Started :: Homework - Question Styles :: Numerical Input (1): 12 (63.16%)
+Example Week 1: Getting Started :: Homework - Question Styles :: Text input (1): 12 (63.16%)
+Example Week 1: Getting Started :: Homework - Question Styles :: Instructor Programmed Responses (1): 0 (0.00%)
+Example Week 2: Get Interactive :: Homework - Labs and Demos :: Molecule Editor (1): 12 (63.16%)
+Example Week 2: Get Interactive :: Homework - Labs and Demos :: Code Grader (1): 12 (63.16%)
+Example Week 2: Get Interactive :: Homework - Labs and Demos :: Electric Circuit Simulator (1): 12 (63.16%)
+Example Week 2: Get Interactive :: Homework - Labs and Demos :: Electric Circuit Simulator (2): 12 (63.16%)
+Example Week 2: Get Interactive :: Homework - Labs and Demos :: Protein Creator (1): 12 (63.16%)
+Example Week 2: Get Interactive :: Homework - Labs and Demos :: Molecule Structures (1): 3 (15.79%)
+About Exams and Certificates :: edX Exams :: Immediate Feedback (1): 10 (52.63%)
+About Exams and Certificates :: edX Exams :: Getting Answers (1): 10 (52.63%)
+About Exams and Certificates :: edX Exams :: Answering More Than Once (1): 10 (52.63%)
+About Exams and Certificates :: edX Exams :: Limited Checks (1): 10 (52.63%)
+About Exams and Certificates :: edX Exams :: Limited Checks (2): 10 (52.63%)
+About Exams and Certificates :: edX Exams :: Randomized Questions (1): 10 (52.63%)
+
+14. Number of users that recieved non-zero grade for problem
+Example Week 1: Getting Started :: Lesson 1 - Getting Started :: Interactive Questions (1): 0 (0.00%)
+Example Week 1: Getting Started :: Lesson 1 - Getting Started :: Reading Assignments (1): 1 (5.26%)
+Example Week 1: Getting Started :: Lesson 1 - Getting Started :: Reading Assignments (2): 1 (5.26%)
+Example Week 1: Getting Started :: Lesson 1 - Getting Started :: New Unit (1): 0 (0.00%)
+Example Week 1: Getting Started :: Homework - Question Styles :: Pointing on a Picture (1): 3 (15.79%)
+Example Week 1: Getting Started :: Homework - Question Styles :: Drag and Drop (1): 3 (15.79%)
+Example Week 1: Getting Started :: Homework - Question Styles :: Multiple Choice Questions (1): 1 (5.26%)
+Example Week 1: Getting Started :: Homework - Question Styles :: Mathematical Expressions (1): 2 (10.53%)
+Example Week 1: Getting Started :: Homework - Question Styles :: Chemical Equations (1): 0 (0.00%)
+Example Week 1: Getting Started :: Homework - Question Styles :: Numerical Input (1): 1 (5.26%)
+Example Week 1: Getting Started :: Homework - Question Styles :: Text input (1): 1 (5.26%)
+Example Week 1: Getting Started :: Homework - Question Styles :: Instructor Programmed Responses (1): 0 (0.00%)
+Example Week 2: Get Interactive :: Homework - Labs and Demos :: Molecule Editor (1): 0 (0.00%)
+Example Week 2: Get Interactive :: Homework - Labs and Demos :: Code Grader (1): 1 (5.26%)
+Example Week 2: Get Interactive :: Homework - Labs and Demos :: Electric Circuit Simulator (1): 0 (0.00%)
+Example Week 2: Get Interactive :: Homework - Labs and Demos :: Electric Circuit Simulator (2): 0 (0.00%)
+Example Week 2: Get Interactive :: Homework - Labs and Demos :: Protein Creator (1): 0 (0.00%)
+Example Week 2: Get Interactive :: Homework - Labs and Demos :: Molecule Structures (1): 0 (0.00%)
+About Exams and Certificates :: edX Exams :: Immediate Feedback (1): 0 (0.00%)
+About Exams and Certificates :: edX Exams :: Getting Answers (1): 0 (0.00%)
+About Exams and Certificates :: edX Exams :: Answering More Than Once (1): 1 (5.26%)
+About Exams and Certificates :: edX Exams :: Limited Checks (1): 0 (0.00%)
+About Exams and Certificates :: edX Exams :: Limited Checks (2): 0 (0.00%)
+About Exams and Certificates :: edX Exams :: Randomized Questions (1): 0 (0.00%)
+

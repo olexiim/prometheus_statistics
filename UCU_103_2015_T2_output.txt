@@ -1,0 +1,53 @@
+Course: UCU/103/2015_T2
+
+1. Number of registered users
+3
+
+2. Number of certificates
+0 (0.00%)
+
+3. User age groups
+NA:	1	(33.33%)
+<20:	0	(0.00%)
+20-24:	1	(33.33%)
+25-29:	2	(66.67%)
+30-34:	1	(33.33%)
+35-39:	0	(0.00%)
+40-44:	1	(33.33%)
+45-49:	0	(0.00%)
+>=50:	0	(0.00%)
+
+4. Percentage of certificates for age groups
+NA:	0%
+20-24:	0%
+25-29:	0%
+30-34:	0%
+40-44:	0%
+
+5. Age medium
+29 years
+
+6. Female user percentage
+33.33%
+
+7. Bachelor and higher educated users (percents)
+166.67%
+
+8. Percentage of forum active users
+0.00%
+
+9. Number of forum message per one user
+0.00
+
+10. Number of users that watched first videos of every week
+
+
+11. Number of users that watched videos
+
+
+12. Number of users that started to pass the problem
+TEST :: Підрозділ :: Блок (1): 2 (66.67%)
+
+13. Number of users that recieved non-zero grade for problem
+TEST :: Підрозділ :: Блок (1): 1 (33.33%)
+

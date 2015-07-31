@@ -1,0 +1,57 @@
+Course: KNU/102/2015_T2
+
+1. Number of registered users
+3,916
+
+2. Number of certificates
+0 (0.00%)
+
+3. User age groups
+NA:	213	(5.44%)
+<20:	449	(11.47%)
+20-24:	1,117	(28.52%)
+25-29:	875	(22.34%)
+30-34:	608	(15.53%)
+35-39:	355	(9.07%)
+40-44:	195	(4.98%)
+45-49:	75	(1.92%)
+>=50:	58	(1.48%)
+
+4. Percentage of certificates for age groups
+NA:	0%
+<20:	0%
+20-24:	0%
+25-29:	0%
+30-34:	0%
+35-39:	0%
+40-44:	0%
+45-49:	0%
+>=50:	0%
+
+5. Age medium
+27 years
+
+6. Female user percentage
+55.92%
+
+7. Bachelor and higher educated users (percents)
+83.27%
+
+8. Percentage of forum active users
+0.00%
+
+9. Number of forum message per one user
+0.00
+
+10. Number of users that watched first videos of every week
+
+
+11. Number of users that watched videos
+
+
+12. Number of users that started to pass the problem
+
+
+13. Number of users that recieved non-zero grade for problem
+
+
