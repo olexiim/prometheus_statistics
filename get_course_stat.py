@@ -36,6 +36,7 @@ headers = ["Number of registered users",
            "Percentage of forum active users",
            "Number of forum message per one user",
            "Number of forum message per one active user",
+           "Number of users that watched first videos of every week",
            "Number of users that watched videos",
            "Number of users that started to pass the problem",
            "Number of users that recieved non-zero grade for problem",
@@ -179,39 +180,42 @@ def get_course_data(course_title):
 #                        print "--------", vitem_title
                         if vitem_category=='video':
                             vi += 1
-                            videos.append([vitem_title+" ({0})".format(vi) ,vitem,0])
+                            videos.append([vi, vitem_title+" ({0})".format(vi) ,vitem,0])
                         elif vitem_category=='problem':
                             pi += 1
-                            problems.append([vitem_title+" ({0})".format(pi) ,vitem,0,0])
+                            problems.append([pi, vitem_title+" ({0})".format(pi) ,vitem,0,0])
                             
     foo = lambda x: 100*float(x)/users_amount
-    video_result = []
+    video_result, first_video_result = [], []
     for vi in range(len(videos)):
         cursor = db.cursor()
-        sql = "SELECT COUNT(1) FROM courseware_studentmodule WHERE module_id ='{0}'".format(videos[vi][1])
+        sql = "SELECT COUNT(1) FROM courseware_studentmodule WHERE module_id ='{0}'".format(videos[vi][2])
         cursor.execute(sql)
         data = cursor.fetchone()
-        videos[vi][2] = data[0]
+        videos[vi][3] = data[0]
         print sql, data[0]
-        video_result += [u"{0}: {1:d} ({2:.2f}%)".format(videos[vi][0],videos[vi][2],foo(videos[vi][2]))]
+        video_result += [u"{0}: {1:d} ({2:.2f}%)".format(videos[vi][1],videos[vi][3],foo(videos[vi][3]))]
+        if videos[vi][0]==1:
+            first_video_result += video_result[-1]
         
     problem_positive_result, problem_result = [], []
     for pi in range(len(problems)):
         cursor = db.cursor()
-        sql = "SELECT COUNT(1) FROM courseware_studentmodule WHERE module_id ='{0}'".format(problems[pi][1])
-        cursor.execute(sql)
-        data = cursor.fetchone()
-        problems[pi][2] = data[0]
-        problem_result += [u"{0}: {1:d} ({2:.2f}%)".format(problems[pi][0],problems[pi][2],foo(problems[pi][2]))]
-        
-        cursor = db.cursor()
-        sql = "SELECT COUNT(1) FROM courseware_studentmodule WHERE module_id ='{0}' AND grade >0".format(problems[pi][1])
+        sql = "SELECT COUNT(1) FROM courseware_studentmodule WHERE module_id ='{0}'".format(problems[pi][2])
         cursor.execute(sql)
         data = cursor.fetchone()
         problems[pi][3] = data[0]
-        problem_positive_result += [u"{0}: {1:d} ({2:.2f}%)".format(problems[pi][0],problems[pi][3],foo(problems[pi][3]))]
+        problem_result += [u"{0}: {1:d} ({2:.2f}%)".format(problems[pi][1],problems[pi][3],foo(problems[pi][3]))]
+        
+        cursor = db.cursor()
+        sql = "SELECT COUNT(1) FROM courseware_studentmodule WHERE module_id ='{0}' AND grade >0".format(problems[pi][2])
+        cursor.execute(sql)
+        data = cursor.fetchone()
+        problems[pi][4] = data[0]
+        problem_positive_result += [u"{0}: {1:d} ({2:.2f}%)".format(problems[pi][1],problems[pi][4],foo(problems[pi][4]))]
         
     result["Number of users that watched videos"] = (video_result, u"\n".join(video_result))
+    result["Number of users that watched first videos of every week"] = (first_video_result, u"\n".join(first_video_result))
     result["Number of users that started to pass the problem"] = (problem_result, u"\n".join(problem_result))
     result["Number of users that recieved non-zero grade for problem"] = (problem_positive_result, u"\n".join(problem_positive_result))
     
