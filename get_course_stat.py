@@ -25,9 +25,6 @@ mongo_edxapp = None
 
 headers = ["Number of registered users",
            "Number of certificates",
-           "Number of users that watched first video of every week",
-           "Number of user that recieved non-zero grade for test",
-           "Number of user that started to pass the test",
            "User age groups",
            "Percentage of certificates for age groups",
            "Age medium",
@@ -38,6 +35,9 @@ headers = ["Number of registered users",
            "Percentage of forum active users",
            "Number of forum message per one user",
            "Number of forum message per one active user",
+           "Number of users that watched first video of every week",
+           "Number of users that started to pass the problem",
+           "Number of users that recieved non-zero grade for problem",
 ]
 
 #def write_output_header(output_file):
@@ -146,41 +146,71 @@ def get_course_data(course_title):
     
     # Get course content
     course_org, course_num, course_name = course_title.split("/")
-    videos, tests = [], []
+    videos, problems = [], []
     chapters = mongo_edxapp.modulestore.find({"_id.org":course_org,"_id.course":course_num,"_id.name":course_name,"_id.category":"course"},{"definition.children":1,"_id":0})[0]["definition"]["children"]
     for chapter in chapters:
         chapter_name = chapter.split("/")[-1]
         res_a = mongo_edxapp.modulestore.find({"_id.name":chapter_name},{"_id":0})[0]
         seqs, chapter_title = res_a["definition"]["children"], res_a["metadata"]["display_name"]
         
-        print chapter_title
+#        print chapter_title
 
         for sequential in seqs:
             sequential_name = sequential.split("/")[-1]
             res_b = mongo_edxapp.modulestore.find({"_id.name":sequential_name},{"_id":0})[0]
             verticals, sequential_title = res_b["definition"]["children"], res_b["metadata"]["display_name"]
             
-            print "--", sequential_title
+#            print "--", sequential_title
 
             for vertical in verticals:
                 vertical_name = vertical.split("/")[-1]
                 res_c = mongo_edxapp.modulestore.find({"_id.name":vertical_name},{"_id":0})[0]
                 vitems, vertical_title = res_c["definition"]["children"], res_c["metadata"]["display_name"]
                 
-                print "-----", vertical_title
+#                print "-----", vertical_title
                 
                 vi, pi = 0, 0
                 for vitem in vitems:
                     vitem_category, vitem_name = vitem.split("/")[-2::1]
                     if vitem_category in ['video','problem']:
                         vitem_title = "{0} :: {1} :: {2}".format(chapter_title.encode('utf-8'), sequential_title.encode('utf-8'), vertical_title.encode('utf-8'))
-                        print "--------", vitem_title
+#                        print "--------", vitem_title
                         if vitem_category=='video':
                             vi += 1
                             videos.append([vitem_title+"({0})".format(vi) ,vitem_name,0])
                         elif vitem_category=='problem':
                             pi += 1
-                            tests.append([vitem_title+"({0})".format(pi) ,vitem_name,0])
+                            problems.append([vitem_title+"({0})".format(pi) ,vitem_name,0,0])
+                            
+    foo = lambda x: 100*float(x)/users_amount
+    video_result = []
+    for vi in range(len(videos)):
+        cursor = db.cursor()
+        sql = "SELECT COUNT(1) FROM courseware_studentmodule WHERE module_id ='{0}'".format(videos[vi][1])
+        cursor.execute(sql)
+        data = cursor.fetchone()
+        videos[vi][2] = data[0]
+        video_result += ["{0}: {1:d} ({2:.2f}%)".format(videos[vi][0],videos[vi][2],foo(videos[vi][2]))]
+        
+    problem_positive_result, problem_result = [], []
+    for pi in range(len(problems)):
+        cursor = db.cursor()
+        sql = "SELECT COUNT(1) FROM courseware_studentmodule WHERE module_id ='{0}'".format(problems[pi][1])
+        cursor.execute(sql)
+        data = cursor.fetchone()
+        problems[pi][2] = data[0]
+        problem_result += ["{0}: {1:d} ({2:.2f}%)".format(problems[pi][0],problems[pi][2],foo(problems[pi][2]))]
+        
+        cursor = db.cursor()
+        sql = "SELECT COUNT(1) FROM courseware_studentmodule WHERE module_id ='{0}' AND grade >0".format(problems[pi][1])
+        cursor.execute(sql)
+        data = cursor.fetchone()
+        problems[pi][3] = data[0]
+        problem_positive_result += ["{0}: {1:d} ({2:.2f}%)".format(problems[pi][0],problems[pi][3],foo(problems[pi][3]))]
+        
+    result["Number of users that watched first video of every week"] = "\n".join(video_result)
+    result["Number of users that started to pass the problem"] = "\n".join(problem_result)
+    result["Number of users that recieved non-zero grade for problem"] = "\n".join(problem_positive_result)
     
     return result
     
