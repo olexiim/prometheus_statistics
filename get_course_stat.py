@@ -45,11 +45,12 @@ def get_course_data(course_title):
     
     return result
     
-def write_course_data_detailed(data, output_file):
+def write_course_data_detailed(course_title, data, output_file):
     with open(output_file,'w') as f:
+        f.write("Course: {0}\n\n".format(course_title))
         i = 1
         for key,value in data.iteritems():
-            f.write("{idx}. {title}\n{value}\n\n".format(idx=i, title=key, value=value))
+            f.write("{idx}. {title}\n{value:,d}\n\n".format(idx=i, title=key, value=value[0]))
             i += 1
 
 if __name__=="__main__":
@@ -90,4 +91,4 @@ if __name__=="__main__":
         if output_file=='':
             output_file = "{0}_output.txt".format(course_title.replace('/','_'))
         if options.output_format=='detailed':
-            write_course_data_detailed(course_data, output_file)
+            write_course_data_detailed(course_title, course_data, output_file)
