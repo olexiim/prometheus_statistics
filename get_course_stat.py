@@ -154,6 +154,7 @@ def get_course_data(course_title):
         chapter_name = chapter.split("/")[-1]
         res_a = mongo_edxapp.modulestore.find({"_id.name":chapter_name},{"_id":0})[0]
         seqs, chapter_title = res_a["definition"]["children"], res_a["metadata"]["display_name"]
+        first_video_in_chapter = True
         
 #        print chapter_title
 
@@ -180,7 +181,8 @@ def get_course_data(course_title):
 #                        print "--------", vitem_title
                         if vitem_category=='video':
                             vi += 1
-                            videos.append([vi, vitem_title+" ({0})".format(vi) ,vitem,0])
+                            videos.append([first_video_in_chapter, vitem_title+" ({0})".format(vi) ,vitem,0])
+                            first_video_in_chapter = False
                         elif vitem_category=='problem':
                             pi += 1
                             problems.append([pi, vitem_title+" ({0})".format(pi) ,vitem,0,0])
@@ -195,7 +197,7 @@ def get_course_data(course_title):
         videos[vi][3] = data[0]
 #        print sql, data[0]
         video_result += [u"{0}: {1:d} ({2:.2f}%)".format(videos[vi][1],videos[vi][3],foo(videos[vi][3]))]
-        if videos[vi][0]==1:
+        if videos[vi][0]:
             first_video_result += [video_result[-1]]
         
     problem_positive_result, problem_result = [], []
@@ -229,6 +231,14 @@ def write_course_data_detailed(course_title, data, output_file):
             if data.has_key(header):
                 f.write(u"{idx}. {title}\n{value}\n\n".format(idx=i, title=header, value=data[header][1]))
                 i += 1
+                
+def get_all_courses():
+    cursor = db.cursor()
+    sql = "SELECT DISTINCT course_id FROM student_courseenrollment WHERE 1"
+    cursor.execute(sql)
+    data = cursor.fetchall()
+    return [x[0] for x in data]
+    
 
 if __name__=="__main__":
     usage = "usage: %prog [options] coursename"
@@ -271,6 +281,7 @@ if __name__=="__main__":
         courses = [course]
         
     for course_title in courses:
+        print "Process", course_title
         course_data = get_course_data(course_title)
         
         if output_file=='':
