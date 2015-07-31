@@ -7,6 +7,7 @@ Created on Tue Jul 14 23:30:16 2015
 
 import MySQLdb
 import time
+import codecs
 from optparse import OptionParser
 from pymongo import MongoClient
 
@@ -173,14 +174,15 @@ def get_course_data(course_title):
                 for vitem in vitems:
                     vitem_category, vitem_name = vitem.split("/")[-2::1]
                     if vitem_category in ['video','problem']:
-                        vitem_title = "{0} :: {1} :: {2}".format(chapter_title.encode('utf-8'), sequential_title.encode('utf-8'), vertical_title.encode('utf-8'))
+                        # vitem_title = "{0} :: {1} :: {2}".format(chapter_title.encode('utf-8'), sequential_title.encode('utf-8'), vertical_title.encode('utf-8'))
+                        vitem_title = u"{0} :: {1} :: {2}".format(chapter_title, sequential_title, vertical_title)
 #                        print "--------", vitem_title
                         if vitem_category=='video':
                             vi += 1
-                            videos.append([vitem_title+"({0})".format(vi) ,vitem_name,0])
+                            videos.append([vitem_title+" ({0})".format(vi) ,vitem,0])
                         elif vitem_category=='problem':
                             pi += 1
-                            problems.append([vitem_title+"({0})".format(pi) ,vitem_name,0,0])
+                            problems.append([vitem_title+" ({0})".format(pi) ,vitem,0,0])
                             
     foo = lambda x: 100*float(x)/users_amount
     video_result = []
@@ -190,7 +192,8 @@ def get_course_data(course_title):
         cursor.execute(sql)
         data = cursor.fetchone()
         videos[vi][2] = data[0]
-        video_result += ["{0}: {1:d} ({2:.2f}%)".format(videos[vi][0],videos[vi][2],foo(videos[vi][2]))]
+        print sql, data[0]
+        video_result += [u"{0}: {1:d} ({2:.2f}%)".format(videos[vi][0],videos[vi][2],foo(videos[vi][2]))]
         
     problem_positive_result, problem_result = [], []
     for pi in range(len(problems)):
@@ -199,28 +202,28 @@ def get_course_data(course_title):
         cursor.execute(sql)
         data = cursor.fetchone()
         problems[pi][2] = data[0]
-        problem_result += ["{0}: {1:d} ({2:.2f}%)".format(problems[pi][0],problems[pi][2],foo(problems[pi][2]))]
+        problem_result += [u"{0}: {1:d} ({2:.2f}%)".format(problems[pi][0],problems[pi][2],foo(problems[pi][2]))]
         
         cursor = db.cursor()
         sql = "SELECT COUNT(1) FROM courseware_studentmodule WHERE module_id ='{0}' AND grade >0".format(problems[pi][1])
         cursor.execute(sql)
         data = cursor.fetchone()
         problems[pi][3] = data[0]
-        problem_positive_result += ["{0}: {1:d} ({2:.2f}%)".format(problems[pi][0],problems[pi][3],foo(problems[pi][3]))]
+        problem_positive_result += [u"{0}: {1:d} ({2:.2f}%)".format(problems[pi][0],problems[pi][3],foo(problems[pi][3]))]
         
-    result["Number of users that watched videos"] = "\n".join(video_result)
-    result["Number of users that started to pass the problem"] = "\n".join(problem_result)
-    result["Number of users that recieved non-zero grade for problem"] = "\n".join(problem_positive_result)
+    result["Number of users that watched videos"] = (video_result, u"\n".join(video_result))
+    result["Number of users that started to pass the problem"] = (problem_result, u"\n".join(problem_result))
+    result["Number of users that recieved non-zero grade for problem"] = (problem_positive_result, u"\n".join(problem_positive_result))
     
     return result
     
 def write_course_data_detailed(course_title, data, output_file):
-    with open(output_file,'w') as f:
+    with codecs.open(output_file,'w',encoding='utf8') as f:
         f.write("Course: {0}\n\n".format(course_title))
         i = 1
         for header in headers:
             if data.has_key(header):
-                f.write("{idx}. {title}\n{value}\n\n".format(idx=i, title=header, value=data[header][1]))
+                f.write(u"{idx}. {title}\n{value}\n\n".format(idx=i, title=header, value=data[header][1]))
                 i += 1
 
 if __name__=="__main__":
