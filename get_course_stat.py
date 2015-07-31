@@ -47,7 +47,7 @@ def get_course_data(course_title):
 
     # Number of registered users
     cursor = db.cursor()
-    sql = "SELECT COUNT( 1 ) FROM student_courseenrollment WHERE course_id LIKE '%s'" % (course_title)
+    sql = "SELECT COUNT( 1 ) FROM student_courseenrollment WHERE course_id LIKE '%s' AND is_active=1" % (course_title)
     cursor.execute(sql)
     data = cursor.fetchone()
     result["Number of registered users"] = (data[0], "{0:,d}".format(data[0]))
@@ -136,12 +136,12 @@ def get_course_data(course_title):
     
     # Percentage of forum active users
     forum_active_users = len(mongo_db.contents.distinct("author_id",{"course_id":course_title}))
-    result["Percentage of forum active users"] = (forum_active_users, "{0:,d}".format(forum_active_users))
+    result["Percentage of forum active users"] = (forum_active_users, "{0:.2f}%".format(100*float(forum_active_users)/users_amount))
     
     # Number of forum message per one user
     posts_number = mongo_db.contents.find({"course_id":course_title}).count()
-    result["Number of forum message per one active user"] = (posts_number/forum_active_users, "{0:.2f}".format(posts_number/forum_active_users))
-    result["Number of forum message per one user"] = (posts_number/users_amount, "{0:.2f}".format(posts_number/users_amount))
+    result["Number of forum message per one active user"] = (posts_number, "{0:.2f}".format(float(posts_number)/forum_active_users))
+    result["Number of forum message per one user"] = (float(posts_number)/users_amount, "{0:.2f}".format(float(posts_number)/users_amount))
     
     return result
     
@@ -183,7 +183,7 @@ if __name__=="__main__":
                   
     db = MySQLdb.connect(options.db_url, options.db_user, options.db_pass, options.db_name )
     
-    mongo_client = MongoClient(mongo_url, mongo_port)
+    mongo_client = MongoClient(options.mongo_url, options.mongo_port)
     mongo_db = mongo_client.cs_comments_service_development
     
     output_file = options.output_file
